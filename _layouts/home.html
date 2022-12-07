@@ -4,6 +4,8 @@ layout: default
 
 {% include home-header.html %}
 
+{%- assign date_format = site.date_format | default: "%Y-%m-%d %H:%M" -%}
+
 <div class="posts">
   {% for post in paginator.posts %}
   <section class="post-entry">
@@ -15,7 +17,7 @@ layout: default
 
     <div class="post-meta">
 <!--      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date_to_string }}</time>-->
-      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | "%Y-%m-%d %H:%M" }}</time>
+      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: date_format }}</time>
       {%- if jekyll.environment == "production" and site.disqus -%}
         <span> • </span>
         <a class="comment-count" href="{{ post.url | relative_url }}#disqus_thread">
