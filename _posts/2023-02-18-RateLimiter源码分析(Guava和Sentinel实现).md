@@ -75,7 +75,7 @@ RateLimiter 允许预占未来的令牌，比如，每秒产生 5 个 permits，
 
 RateLimiter 目前只有一个子类，那就是抽象类 SmoothRateLimiter，SmoothRateLimiter 有两个实现类，也就是我们这边要介绍的两种模式，我们先简单介绍下中间的抽象类 SmoothRateLimiter，然后后面分两个小节分别介绍它的两个实现类。
 
-![1](https://assets.javadoop.com/imgs/20510079/rate-limiter/1.png)
+![1](https://s2.loli.net/2023/02/18/kT5yPN4eDIVLOAx.png)
 
 RateLimiter 作为抽象类，只有两个属性：
 
@@ -300,7 +300,7 @@ SmoothWarmingUp 适用于资源需要预热的场景，比如我们的某个接�
 
 大家先有一些粗的概念，然后我们来看下面这个图：
 
-![smooth-warm-up](https://assets.javadoop.com/imgs/20510079/rate-limiter/smooth-warm-up.png)
+![smooth-warm-up](https://s2.loli.net/2023/02/18/LuBDoFlymwehfcr.png)
 
 这个图不容易看懂，X 轴代表 storedPermits 的数量，Y 轴代表获取一个 permits 需要的时间。简单粗暴地说就是：存货越多，代表系统越冷，获取令牌所需时间越多。
 
@@ -320,7 +320,7 @@ SmoothWarmingUp 适用于资源需要预热的场景，比如我们的某个接�
 
 有一个关键点，从 thresholdPermits 到 0 的时间，是从 maxPermits 到 thresholdPermits 时间的一半，也就是梯形的面积是长方形面积的 2 倍，梯形的面积是 warmupPeriod。
 
-![7](https://assets.javadoop.com/imgs/20510079/rate-limiter/7.png)
+![7](https://s2.loli.net/2023/02/18/3GBLSofCrxWQTcn.png)
 
 > 之所以长方形的面积是 warmupPeriod/2，也就是梯形面积的一半，是因为 coldFactor 是硬编码的 **3**。具体的可以参考一下文章下面评论区的讨论。
 
@@ -401,13 +401,13 @@ void doSetRate(double permitsPerSecond, double stableIntervalMicros) {
 
 setRate 方法非常简单，接下来，我们要分析的是 storedPermitsToWaitTime 方法，我们回顾一下下面的代码：
 
-![3](https://assets.javadoop.com/imgs/20510079/rate-limiter/3.png)
+![3](https://s2.loli.net/2023/02/18/PtkQ2BKxMRfb4Oi.png)
 
 这段代码是 acquire 方法的核心，waitMicros 由两部分组成，一部分是从 storedPermits 中获取花费的时间，一部分是等待 freshPermits 产生花费的时间。在 SmoothBursty 的实现中，从 storedPermits 中获取 permits 直接返回 0，不需要等待。
 
 而在 SmoothWarmingUp 的实现中，由于需要预热，所以从 storedPermits 中取 permits 需要花费一定的时间，其实就是要计算下图中，阴影部分的面积。
 
-![4](https://assets.javadoop.com/imgs/20510079/rate-limiter/6.png)
+![4](https://s2.loli.net/2023/02/18/geliAmNqyxcWJoE.png)
 
 ```java
 @Override
@@ -452,7 +452,7 @@ RateLimiterController 非常简单，它通过使用 latestPassedTime 属性来�
 
 举个非常简单的例子：设置 QPS 为 10，那么每 100 毫秒允许通过一个，通过计算当前时间是否已经过了上一个请求的通过时间 **latestPassedTime** 之后的 100 毫秒，来判断是否可以通过。假设才过了 50ms，那么需要当前线程再 sleep 50ms，然后才可以通过。如果同时有另一个请求呢？那需要 sleep 150ms 才行。
 
-![sentinel-3](https://assets.javadoop.com/imgs/20510079/rate-limiter/sentinel-3.png)
+![sentinel-3](https://s2.loli.net/2023/02/18/eUnpsFRHbGqv74P.png)
 
 ```java
 public class RateLimiterController implements TrafficShapingController {
@@ -539,7 +539,7 @@ WarmUpController 用来防止突发流量迅速上升，导致系统负载严重
 
 Guava 的 SmoothWarmingUp 是用来控制获取令牌的速率的，和这里的控制 QPS 还是有一点区别，但是中心思想是一样的。我们在看完源码以后再讨论它们的区别。
 
-![sentinel-2](https://assets.javadoop.com/imgs/20510079/rate-limiter/sentinel-2.png)
+![sentinel-2](https://s2.loli.net/2023/02/18/RT3LfijKtG9QWX2.png)
 
 为了帮助大家理解源码，我们这边先设定一个场景：QPS 设置为 100，预热时间设置为 10 秒。代码中使用 “【】” 代表根据这个场景计算出来的值。
 
